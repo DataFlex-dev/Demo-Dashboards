@@ -1,0 +1,11 @@
+#REPLACE FILE4 Project
+#REPLACE Project.Recnum |FN4,0
+#REPLACE Project.ProjectID |FN4,1
+#REPLACE Project.Name |FS4,2
+#REPLACE Project.PrjType |FN4,3
+#REPLACE Project.TTCode |FS4,4
+#REPLACE Project.TTSubcode |FS4,5
+#REPLACE Project.Description |FS4,6
+#REPLACE Project.PrjStatus |FN4,7
+#REPLACE Project.JiraIssueID |FS4,8
+#REPLACE Project.CustomerID |FN4,9

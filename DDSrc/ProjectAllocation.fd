@@ -1,0 +1,5 @@
+#REPLACE FILE5 ProjectAllocation
+#REPLACE ProjectAllocation.Recnum |FN5,0
+#REPLACE ProjectAllocation.ProjectID |FN5,1
+#REPLACE ProjectAllocation.ResourceID |FN5,2
+#REPLACE ProjectAllocation.HoursPerWeek |FN5,3

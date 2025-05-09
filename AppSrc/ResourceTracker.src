@@ -1,0 +1,300 @@
+﻿Use DFAllEnt.pkg
+Use cFlexTronPanel.pkg
+Use cLocalWebAppHost.pkg
+Use cWebPanel.pkg
+Use cWebMenuButton.pkg
+Use cWebBreadcrumb.pkg
+Use cWebActionBar.pkg
+Use cWebButton.pkg
+Use cWebMenuItem.pkg
+Use cWebFloatingPanel.pkg
+Use cWebImage.pkg
+Use cWebList.pkg
+Use cWebColumn.pkg
+Use cWebMenuList.pkg
+
+Object oHtmlHelp is a cHtmlHelp
+End_Object
+
+Object oApplication is a cApplication
+    Set peHelpType to htHtmlHelp
+
+    Object oConnection is a cConnection
+        Use LoginEncryption.pkg
+        Use DatabaseLoginDialog.dg
+    End_Object
+
+End_Object
+
+
+
+Global_Variable Handle ghoStandardConfigWizard
+
+
+
+Object oMain is a cFlexTronPanel
+    Set Location to 4 3
+    Set Size to 800 800
+
+    Object oLocalWebAppHost is a cLocalWebAppHost
+        Use AllWebAppClasses.pkg
+        
+        // Windows View Properties
+        Set Size to 800 800
+        Set Location to 0 0
+        Set peAnchors to anAll
+        
+        // Enable DevTools if you want, a normal production application should not have this.
+        Set pbAreDevToolsEnabled to False
+        Set pbAreDefaultContextMenusEnabled to False
+        
+        // From here on web
+        Set psTheme to "Df_Material"
+        Set peAlignView to alignCenter
+        Set psApplicationTitle to "Resource Tracker"
+    
+        // It is important to set this so that all views will default
+        // to drill down style views.
+        Set peApplicationStyle to wvsDrillDown
+        Set peApplicationStateMode to asmHistoryAndUrls
+        Set pbAreBrowserAcceleratorKeysEnabled to True
+        Set pbAreDevToolsEnabled to True
+        Set pbAreDefaultContextMenusEnabled to True
+    
+        Object oViewStack is a cWebViewStack
+            // use ghoWebViewStack to reference this object
+        End_Object
+    
+        Procedure HideHeader
+            WebSet pbRender of oHeaderPanel to False
+        End_Procedure
+
+        Procedure ShowHeader
+            WebSet pbRender of oHeaderPanel to True
+        End_Procedure
+
+        Object oFloatingMenuPanel is a cWebFloatingPanel
+            Set piColumnCount to 4
+            Set pePosition to fpFloatLeftSqueezeWebApp
+            Set piContentWidth to 250
+            
+            Set psCssClass to "MainMenuPanel"
+            Set peLayoutType to ltGrid
+            Set piRowCount to 4
+            Set psColumnWidths to "0/47 1/16 2/151"
+            Set psRowHeights to "0/53 2/1fr"
+            Set piWidth to 250
+            
+            Set pbVisible to True
+
+            Object oToggleMenu is a cWebButton
+                Set piRowIndex to 0
+                Set piColumnIndex to 0
+                Set pbFillHeight to True
+                Set psCSSClass to "WebIcon_Hamburger ToggleMenuBtn"
+            
+                Procedure OnClick
+                    Integer iWidth
+                    
+                    WebGet piWidth of oFloatingMenuPanel to iWidth
+                    
+                    If (iWidth > 100) ;
+                        WebSet piWidth of oFloatingMenuPanel to 50
+                    Else ;
+                        WebSet piWidth of oFloatingMenuPanel to 250
+                End_Procedure
+            End_Object
+
+            Object oMainListMenu is a cWebMenuList
+                Set piRowIndex to 2
+                Set piColumnIndex to 0
+                Set piColumnSpan to 4
+                Set pbShowCaption to False
+                Set pbShowIcons to True
+                Set pbFillHeight to True
+                
+                Procedure HighlightMenu Handle hoView                    
+                    WebSet psCSSClass of oPlannerItem to (psCSSClass(oVwDashboard) * If(hoView = oVwDashboard, "Highlight", ""))
+                    WebSet psCSSClass of oPlannerItem to (psCSSClass(oPlannerItem) * If(hoView = oFlexTronDashboard, "Highlight", ""))
+                    WebSet psCSSClass of oResourcesItem to (psCSSClass(oResourcesItem) * If(hoView = oSelectResource, "Highlight", ""))
+                    WebSet psCSSClass of oProjectsItem to (psCSSClass(oProjectsItem) * If(hoView = oSelectProject, "Highlight", ""))
+                    WebSet psCSSClass of oCustomersItem to (psCSSClass(oCustomersItem) * If(hoView = oSelectCustomer, "Highlight", ""))
+                    WebSet psCSSClass of oMaintenanceItem to (psCSSClass(oMaintenanceItem) * If(hoView = oMaintenance, "Highlight", ""))
+                End_Procedure
+                
+                Object oDashboardItem is a cWebMenuItem
+                    Set psCaption to "Dashboard"
+                    Set psCSSClass to "WebIcon_SVG WebIcon_Planner"
+                    
+                    WebRegisterPath ntNavigateBegin oVwDashboard
+
+                    Procedure OnClick
+                        Send NavigatePath
+                    End_Procedure
+                End_Object
+                             
+                
+                Object oPlannerItem is a cWebMenuItem
+                    Set psCaption to "Planner"
+                    Set psCSSClass to "WebIcon_SVG WebIcon_Planner"
+                    
+                    WebRegisterPath ntNavigateBegin oFlexTronDashboard
+
+                    Procedure OnClick
+                        Send NavigatePath
+                    End_Procedure
+                End_Object
+
+                Object oProjectsItem is a cWebMenuItem
+                    Set psCaption to "Projects"
+                    Set psCSSClass to "WebIcon_SVG WebIcon_Projects"
+
+                    WebRegisterPath ntNavigateBegin oSelectProject
+
+                    Procedure OnClick
+                        Send NavigatePath
+                    End_Procedure
+                End_Object
+
+                Object oCustomersItem is a cWebMenuItem
+                    Set psCaption to "Customers"
+                    Set psCSSClass to "WebIcon_SVG WebIcon_Customers"
+
+                    WebRegisterPath ntNavigateBegin oSelectCustomer
+
+                    Procedure OnClick
+                        Send NavigatePath
+                    End_Procedure
+                End_Object
+
+                Object oResourcesItem is a cWebMenuItem
+                    Set psCaption to "Resources"
+                    Set psCSSClass to "WebIcon_SVG WebIcon_Resources"
+
+                    WebRegisterPath ntNavigateBegin oSelectResource
+
+                    Procedure OnClick
+                        Send NavigatePath
+                    End_Procedure
+                End_Object
+                
+                Object oMaintenanceItem is a cWebMenuItem
+                    Set psCaption to "Maintenance"
+                    Set psCSSClass to "WebIcon_SVG WebIcon_Maintenance"
+                    
+                    WebRegisterPath ntNavigateBegin oMaintenance
+                    
+                    Procedure OnClick
+                        Send NavigatePath
+                    End_Procedure
+                End_Object
+               
+            End_Object
+
+            Object oLogoImg is a cWebImage
+                Set piColumnSpan to 0
+                Set piRowIndex to 0
+                Set piColumnIndex to 2
+                Set psUrl to "Images/DataFlex.svg"
+                Set pePosition to wiFit
+                Set piHeight to 0
+                Set pbFillHeight to True
+            End_Object
+        End_Object
+    
+        Object oHeaderPanel is a cWebPanel
+            Set peRegion to prTop
+            Set psCSSClass to "HeaderPanel"
+    
+    
+            Object oCaptionPanel is a cWebPanel
+                Set piColumnCount to 12
+                Set peLayoutType to ltGrid
+                Set psColumnWidths to "0/8"
+    
+                Object oCaptionBreadcrumb is a cWebBreadcrumb
+                    Set peBreadcrumbStyle to crumbCaption
+                    Set piColumnSpan to 11
+                    Set piRowIndex to 0
+                    Set piColumnIndex to 1
+                    WebSetResponsive peBreadcrumbStyle rmMobile to crumbDropDown
+                End_Object
+            End_Object
+    
+            Object oActionPanel is a cWebPanel
+                Set peRegion to prRight
+                Set piColumnCount to 1
+                Set piWidth to 120
+    
+                Object oMainActions is a cWebActionBar
+                    Set piColumnSpan to 0
+                    Set peAlign to alignRight
+                End_Object
+            End_Object
+    
+            Object oBreadcrumbPanel is a cWebPanel
+                Set peRegion to prBottom
+                WebSetResponsive pbRender rmMobile to False
+    
+                Object oHorizontalBreadcrumb is a cWebBreadcrumb
+                    // Do not render this breadcrumb if there is only the Dashboard view in
+                    // the stack
+                    Procedure OnUpdateViewStack
+                        Integer iCount
+                        Get ViewStackSize of ghoWebViewStack to iCount
+                        WebSet pbRender to (iCount > 1)
+    
+                        Forward Send OnUpdateViewStack
+                    End_Procedure
+                End_Object
+            End_Object
+        End_Object
+    
+        //Use SessionManager.wo
+        Use LocalResourceManager.wo
+        Use FlexTronDashboard.wo
+        Use ZoomProject.wo
+        Use SelectProject.wo
+        Use SelectCustomer.wo
+        Use ZoomCustomer.wo
+        Use ZoomResource.wo
+        Use SelectResource.wo
+        Use Maintenance.wo        
+        Use VwDashboard.wo
+        
+        Use cWebWidgetConfigurationWizardStandard.pkg
+        
+        Object oStandardConfigWizard is a cWebWidgetConfigurationWizardStandard
+            Move (Self) to ghoStandardConfigWizard
+        End_Object
+        
+
+        Set phoDefaultView to oVwDashboard
+        
+        //  Update caption of the window with new title
+        Procedure OnGeneratePageTitle String  ByRef sTitle Handle hoView String sViewTitle
+            Forward Send OnGeneratePageTitle (&sTitle) hoView sViewTitle
+            
+            Set Label of oMain to sTitle
+        End_Procedure
+        
+        Procedure HighlightMenu Handle hoView
+            Send HighlightMenu of (oMainListMenu(oFloatingMenuPanel)) hoView
+        End_Procedure
+
+        Procedure OnDefineScriptIncludes String[]  ByRef aScriptHtml
+            Forward Send OnDefineScriptIncludes (&aScriptHtml)
+            
+            Move """
+                    <!-- Charts -->
+                    <script type="module" src="GraphWrappers/ChartWrapper.js"></script>
+                    <script src="GraphWrappers/Chartjs/chart.min.js"></script>
+                    <script src="GraphWrappers/HighCharts/HighCharts.min.js"></script>
+                    <script src="GraphWrappers/Syncfusion/Syncfusion.min.js"></script>
+                """ to aScriptHtml[-1]
+        End_Procedure
+    End_Object
+End_Object
+
+Send Activate of oMain
+Start_UI

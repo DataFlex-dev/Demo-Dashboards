@@ -1,0 +1,105 @@
+﻿Use cWebView.pkg
+Use cWebPanel.pkg
+Use cWebWidgetContainer.pkg
+Use cWebWidgetPalette.pkg
+Use cWidgetWelcomeTile.wo
+Use cWidgetProjectDetails.wo
+
+Open WebAppUser
+
+Object oVwDashboard is a cWebView
+    Set psCaption to "VwDashboard"
+    Set pbServerOnShow to True
+    Set pbFillHeight to True
+    Set peViewType to vtUndefined
+    Set pbShowCaption to False
+    Set peStateMode to vsmOff   // 
+
+    Object oWebMainPanel is a cWebPanel
+        Set piColumnCount to 12
+
+        Object oWidgetContainer is a cWebWidgetContainer
+            Set pbServerOnToggleEditMode to True
+//            Set pbUseCustomConfigurationStorage to True
+            
+            Procedure OnRegisterWidgets
+                Send RegisterWidget (RefClass(cWidgetWelcomeTile))
+                Send RegisterWidget (RefClass(cWidgetProjectDetails))
+            End_Procedure
+           
+            Procedure OnToggleEditMode Boolean bEdit
+                Forward Send OnToggleEditMode bEdit
+                
+                WebSet pbRender of oWidgetsPanel to bEdit
+            End_Procedure
+
+            Procedure OnLoadConfiguration tContainerDef  ByRef ContainerDef
+                Handle hoJson
+                Boolean bSuccess
+                
+                Forward Send OnLoadConfiguration (&ContainerDef)
+                
+                Clear WebAppUser
+                Move 'Admin' to WebAppUser.LoginName
+                Find EQ WebAppUser by 1
+                
+                If (Found) Begin
+                    Get Create (RefClass(cJsonObject)) to hoJson
+                    
+                    Get ParseString of hoJson (Trim(WebAppUser.DashboardConfig)) to bSuccess
+                    If (bSuccess) Begin
+                        Get JsonToDataType of hoJson to ContainerDef
+                    End
+                End
+            End_Procedure
+
+            Procedure OnSaveCustomConfiguration tContainerDef ContainerDef
+                Handle hoJson
+                Boolean bSuccess
+                
+                Forward Send OnLoadConfiguration (&ContainerDef)
+                
+                Clear WebAppUser
+                Move 'Admin' to WebAppUser.LoginName
+                Find EQ WebAppUser by 1
+                
+                If (Found) Begin
+                    Get Create (RefClass(cJsonObject)) to hoJson
+                    
+                    Send DataTypeToJson of hoJson ContainerDef
+                    
+                    Reread WebAppUser
+                        Get Stringify of hoJson to WebAppUser.DashboardConfig
+                        Save WebAppUser
+                    Unlock
+                End
+            End_Procedure
+            
+        End_Object
+
+        
+
+    End_Object
+    
+    Object oWidgetsPanel is a cWebPanel
+        Set piWidth to 200
+        Set pbRender to False
+        Set peRegion to prRight
+        Set psCSSClass to "WidgetPanel"
+        
+        Object oWlWidgets is a cWebWidgetPalette
+            Set piColumnSpan to 2
+            Set piColumnIndex to 10
+            Set phoWidgetContainer to oWidgetContainer
+        End_Object
+    End_Object
+    
+
+    Procedure OnLoad
+        Forward Send OnLoad
+        
+        Send LoadConfiguration of oWidgetContainer
+    End_Procedure
+
+End_Object
+

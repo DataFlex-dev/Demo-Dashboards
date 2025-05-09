@@ -1,0 +1,6 @@
+#REPLACE FILE8 ProjectStatus
+#REPLACE ProjectStatus.Recnum |FN8,0
+#REPLACE ProjectStatus.ProjectStatusID |FN8,1
+#REPLACE ProjectStatus.Code |FS8,2
+#REPLACE ProjectStatus.Description |FS8,3
+#REPLACE ProjectStatus.Active |FN8,4

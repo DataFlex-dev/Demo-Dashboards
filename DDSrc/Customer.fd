@@ -1,0 +1,4 @@
+#REPLACE FILE1 Customer
+#REPLACE Customer.Recnum |FN1,0
+#REPLACE Customer.CustomerID |FN1,1
+#REPLACE Customer.Company |FS1,2

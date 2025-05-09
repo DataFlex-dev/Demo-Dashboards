@@ -1,0 +1,6 @@
+#REPLACE FILE3 ProgressType
+#REPLACE ProgressType.File_Number |CI3
+#REPLACE ProgressType.PrgTypeID |FN3,1
+#REPLACE ProgressType.Description |FS3,2
+#REPLACE ProgressType.AppliesTo |FS3,3
+#REPLACE ProgressType.Active |FN3,4

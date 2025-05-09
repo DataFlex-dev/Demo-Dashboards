@@ -1,0 +1,216 @@
+﻿Use cWebView.pkg
+Use cWebPanel.pkg
+Use cWebForm.pkg
+Use cWebButton.pkg
+Use cWebGroup.pkg
+Use cWebSpacer.pkg
+Use cWebHtmlBox.pkg
+Use cWebMenuGroup.pkg
+Use cWebMenuItem.pkg
+Use cWebLabel.pkg
+Use cWebList.pkg
+Use cWebColumn.pkg
+Use cResourceDataDictionary.dd
+Use cProjectTypeDataDictionary.dd
+Use cProjectStatusDataDictionary.dd
+Use cCustomerDataDictionary.dd
+Use cProjectDataDictionary.dd
+Use cProjectAllocationDataDictionary.dd
+Use cWebColumnTags.pkg
+Use cWebDragDropHelper.pkg
+Use cWebTreeView.pkg
+Use cWebContextMenu.pkg
+
+Object oFlexTronDashboard is a cWebView
+    Object oCustomer_DD is a cCustomerDataDictionary
+    End_Object
+
+    Object oProjectStatus_DD is a cProjectStatusDataDictionary
+    End_Object
+
+    Object oProjectType_DD is a cProjectTypeDataDictionary
+    End_Object
+
+    Object oProject_DD is a cProjectDataDictionary
+        Set DDO_Server to oCustomer_DD
+        Set DDO_Server to oProjectStatus_DD
+        Set DDO_Server to oProjectType_DD
+    End_Object
+
+    Object oResource_DD is a cResourceDataDictionary
+    End_Object
+
+    Object oProjectAllocation_DD is a cProjectAllocationDataDictionary
+        Set Constrain_file to Project.File_number
+        Set DDO_Server to oResource_DD
+        Set DDO_Server to oProject_DD
+    End_Object
+    
+    Set Main_DD to oProject_DD
+    Set Server to oProject_DD
+
+
+    Object oAllResource_DD is a cResourceDataDictionary
+    End_Object
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+    // Add a DDO Structure 
+    //
+    // There is no need to synchronize a DD structure on the client so we do
+    // not set the Server property or send ADDOStructure. We will simply use
+    // DDO's to mine data and generate HTML for our cWebHTMLBox objects.
+    // It is the HTML in these objects that is sent to the client each time 
+    // this page is shown.
+    //
+    // Also, it is important for the drill-down Navigation interface that we
+    // do not set the Server property to some DDO because this will affect 
+    // constraints in the next view that we navigate to.
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+    Set piMaxWidth to 1024
+    
+    Set psCaption to "Dashboard"
+    Set peViewType to vtUndefined
+    Set pbShowCaption to False
+    Set psCSSClass to "Dashboard"
+    
+    Object oWebMainPanel is a cWebPanel
+        Set piColumnCount to 12
+
+        Object oListResources is a cWebList
+            Set Server to oAllResource_DD
+            Set piColumnSpan to 6
+            Set pbScroll to False
+            Object oResource_FirstName is a cWebColumn
+                Entry_Item Resource.FirstName
+                Set psCaption to "First Name"
+                Set piWidth to 50
+            End_Object
+
+            Object oResource_LastName is a cWebColumn
+                Entry_Item Resource.LastName
+                Set psCaption to "Last Name"
+                Set piWidth to 50
+            End_Object
+
+            Object oResource_Initials is a cWebColumn
+                Entry_Item Resource.Initials
+                Set psCaption to "Initials"
+                Set piWidth to 50
+                Set pbHidden to True
+            End_Object
+
+            Procedure OnLoad
+                Forward Send OnLoad
+            End_Procedure
+        End_Object
+
+        Object oTreeProjects is a cWebTreeView
+            Set piColumnSpan to 4
+            Set piColumnIndex to 8
+
+            Function OnLoadChildNodes String sId String sValue Integer iLevel Returns tWebTreeItem[]
+                tWebTreeItem[] RetVal
+                Integer iItem
+                
+                Send Request_Read of oProject_DD FIRST_RECORD Project.File_Number 3
+                While (Found)
+                    Move Project.Name to RetVal[iItem].sName
+                    Move False to RetVal[iItem].bLoadChildren
+                    Move True to RetVal[iItem].bExpanded
+                    Move True to RetVal[iItem].bFolder
+                    Move "WebIcon_SVG WebIcon_Projects" to RetVal[iItem].sCSSClass
+                    Move Project.ProjectID to RetVal[iItem].sId
+                    Move (SerializeRowID(GetRowID(RefTable(Project)))) to RetVal[iItem].sValue
+                    Increment iItem
+                    
+                    Send Request_Read of oProjectAllocation_DD FIRST_RECORD ProjectAllocation.File_Number 1
+                    While (Found)
+                        Move (Resource.FirstName * Resource.LastName) to RetVal[iItem].sName
+                        Move False to RetVal[iItem].bFolder
+                        Move False to RetVal[iItem].bLoadChildren
+                        Move Project.ProjectID to RetVal[iItem].sParentId
+                        Move "WebIcon_SVG WebIcon_Resources" to RetVal[iItem].sCSSClass
+                        //Move (String(Project.ProjectID) + "." + String(ProjectAllocation.ResourceID)) to RetVal[iItem].sId
+                        Move (SerializeRowID(GetRowID(RefTable(ProjectAllocation)))) to RetVal[iItem].sId
+                        
+                        Increment iItem
+                        
+                        Send Request_Read of oProjectAllocation_DD NEXT_RECORD ProjectAllocation.File_Number 1
+                    Loop
+                    Send Request_Read of oProject_DD NEXT_RECORD Project.File_Number 3
+                Loop
+                
+                Function_Return RetVal
+            End_Function
+
+            Object oWebContextMenu1 is a cWebContextMenu
+                Set peContext to C_WebUIContextTreeviewItem
+                Set pbShowIcons to True
+                
+
+                Object oWebMenuItem1 is a cWebMenuItem
+                    Set psCaption to "Unassign"
+                    Set psCSSClass to "WebIcon_Delete"
+
+                    Procedure OnClick
+                        String sRowId
+                        WebGet psContextValue of oWebContextMenu1 to sRowId
+                        
+                        Send FindByRowId of oProjectAllocation_DD (RefTable(ProjectAllocation)) (DeserializeRowID(sRowId))
+                        If (Found) Begin
+                            Send Request_Delete of oProjectAllocation_DD
+                        End
+                        
+                        Send FullRefresh of oTreeProjects
+                    End_Procedure
+                End_Object
+                
+            End_Object
+            
+        End_Object
+
+        
+        
+        // - - - - - - - - - - - - - - -
+        // Main Panel's Responsive Rules
+        // - - - - - - - - - - - - - - -
+        WebSetResponsive piColumnCount rmMobile to 1
+        WebSetResponsive piColumnCount rmTabletPortrait to 16
+    
+    End_Object
+
+    Object oWebDragDropHelper1 is a cWebDragDropHelper
+    
+        //  Register drag sources
+        Send RegisterDragSource oListResources C_WebDragListRow
+        //  Register drop targets
+        Send RegisterDropTarget oTreeProjects C_WebDropTreeviewFolder
+                    
+        //  Handle drop event
+        Procedure OnDrop Handle hoDragSource Handle hoDropTarget WebDropPosition eDropPosition
+            tWebListDragData listDragData
+            Get DragData of hoDragSource to listDragData
+            
+            tWebTreeViewDropData treeDropData
+            Get DropData of hoDropTarget to treeDropData
+            
+            Send FindByRowId of oProject_DD (Reftable(Project)) (DeserializeRowID(treeDropData.data.sValue))
+            Send Clear of oProjectAllocation_DD
+            
+            Send FindByRowId of oResource_DD (RefTable(Resource)) (DeserializeRowID(listDragData.data.sRowId))
+            
+            Send Request_Save of oProjectAllocation_DD
+            Send FullRefresh of oTreeProjects
+        End_Procedure
+    End_Object
+    
+    Procedure OnBeforeShow
+        // Each time this view is shown we will update the appropriate information.
+        Send FindFromTop of oListResources
+        Send FullRefresh of oTreeProjects
+
+        Delegate Send HighlightMenu Self
+    End_Procedure
+
+
+End_Object

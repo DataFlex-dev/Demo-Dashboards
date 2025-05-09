@@ -1,0 +1,39 @@
+﻿Use cWebWidget.pkg
+
+Composite cWidgetWelcomeTile is a cWebWidget
+    Set psWidgetCaption to "Welcome Tile"
+    Set psWidgetDescription to "Shows current login details"
+    Set psWidgetName to "WelcomeTile"
+    Set piRowSpan to 2
+    Set piColumnSpan to 2
+    Set piDefaultColSpan to 2
+    Set piDefaultRowSpan to 2
+    Set pbShowBorder to True
+    Set pbShowCaption to False
+    
+    Object oWelcomeTile is a cWebHtmlBox
+        Set pbServerOnClick to True
+        Set pbScroll to False
+        Set psCSSClass to "Tile Light"
+        Set psHtml to """
+            <div class="Tile_Title">Welcome</div>
+            <div class="Tile_Subtitle">YourUserNameHere</div>
+            """
+        
+        Procedure RefreshDetails            
+                Send UpdateHTML (SFormat("""
+                    <div class="Tile_Title">Welcome Back!</div>
+                    <div class="Tile_Subtitle">Admin</div>'
+                    """, ''))
+        End_Procedure
+         
+    End_Object
+
+    Procedure OnInitializeWidget
+        Forward Send OnInitializeWidget
+        
+        Send RefreshDetails of oWelcomeTile     
+    End_Procedure
+    
+    
+End_Composite

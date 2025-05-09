@@ -1,0 +1,13 @@
+[Properties]
+Version=25.0
+[WorkspacePaths]
+ConfigFile=.\Programs\Config.ws
+[Preferences]
+DefaultFormHeight=12
+[Conditionals]
+Is$WebApp=False
+Is$Win64=True
+[Projects]
+Project0=ResourceTracker.src
+[Libraries]
+Lib1=..\ChartJS\ChartingLibrary\ChartLibrary_25.sws

@@ -1,0 +1,87 @@
+﻿Use cWebView.pkg
+Use cWebPanel.pkg
+Use cWebForm.pkg 
+Use cWebButton.pkg
+Use cProjectStatusDataDictionary.dd
+Use cProjectTypeDataDictionary.dd
+Use cWebGrid.pkg
+Use cWebColumn.pkg
+Use cWebColumnCheckBox.pkg
+
+Object oMaintenance is a cWebView
+    Object oProjectType_DD is a cProjectTypeDataDictionary
+    End_Object
+
+    Object oProjectStatus_DD is a cProjectStatusDataDictionary
+    End_Object
+    Send AddDDOStructure oProjectStatus_DD
+    
+    Set Main_DD to oProjectStatus_DD
+    Set Server to oProjectStatus_DD
+    Set psCaption to "Maintenance"
+    Set pbShowCaption to False
+
+    // Your DDO structure will go here
+
+    Object oWebMainPanel is a cWebPanel
+        Set piColumnCount to 12
+
+        Object oProjectStatusGrid is a cWebGrid
+            Set pbFillHeight to True
+            Object oProjectStatus_Code is a cWebColumn
+                Entry_Item ProjectStatus.Code
+                Set psCaption to "Project Status"
+                Set piWidth to 50
+            End_Object
+
+            Object oProjectStatus_Description is a cWebColumn
+                Entry_Item ProjectStatus.Description
+                Set psCaption to "Project Status Description"
+                Set piWidth to 50
+            End_Object
+
+            Object oProjectStatus_Active is a cWebColumnCheckBox
+                Entry_Item ProjectStatus.Active
+                Set psCaption to "Active"
+                Set piWidth to 50
+                Set pbFixedWidth to True
+            End_Object
+        End_Object
+
+        Object oProjectTypeGrid is a cWebGrid
+            Set Server to oProjectType_DD
+            Set pbFillHeight to True
+
+            Object oProjectType_Type is a cWebColumn
+                Entry_Item ProjectType.Type
+                Set psCaption to "Project Type"
+                Set piWidth to 302
+            End_Object
+
+            Object oProjectType_Description is a cWebColumn
+                Entry_Item ProjectType.Description
+                Set psCaption to "Description"
+                Set piWidth to 598
+            End_Object
+
+            Object oProjectType_Active is a cWebColumnCheckBox
+                Entry_Item ProjectType.Active
+                Set psCaption to "Active"
+                Set piWidth to 50
+                Set pbFixedWidth to True
+            End_Object
+        End_Object
+        
+        // place controls here
+        // Your view will grow as controls are added
+       
+    End_Object 
+    Procedure OnBeforeShow
+        Send FindFromTop of oProjectStatusGrid
+        Send FindFromTop of oProjectTypeGrid
+        
+        Delegate Send HighlightMenu Self
+    End_Procedure
+
+
+End_Object

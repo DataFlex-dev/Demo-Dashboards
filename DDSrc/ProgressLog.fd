@@ -1,0 +1,7 @@
+#REPLACE FILE2 ProgressLog
+#REPLACE ProgressLog.File_Number |CI2
+#REPLACE ProgressLog.ProgressID |FN2,1
+#REPLACE ProgressLog.PrgType |FN2,2
+#REPLACE ProgressLog.TaskID |FN2,3
+#REPLACE ProgressLog.Notes |FS2,4
+#REPLACE ProgressLog.LogDate |FM2,5

@@ -1,0 +1,14 @@
+#REPLACE FILE9 Task
+#REPLACE Task.File_Number |CI9
+#REPLACE Task.TaskID |FN9,1
+#REPLACE Task.ProjectID |FN9,2
+#REPLACE Task.ResourceID |FN9,3
+#REPLACE Task.Summary |FS9,4
+#REPLACE Task.Description |FS9,5
+#REPLACE Task.JiraIssueID |FS9,6
+#REPLACE Task.DateAssignment |FD9,7
+#REPLACE Task.Estimate |FN9,8
+#REPLACE Task.DateStart |FD9,9
+#REPLACE Task.DateEnd |FD9,10
+#REPLACE Task.Actual |FN9,11
+#REPLACE Task.TaskStatus |FN9,12

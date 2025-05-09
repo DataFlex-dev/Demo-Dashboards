@@ -1,0 +1,191 @@
+﻿Use cWebWidget.pkg
+Use cWebSuggestionForm.pkg
+Use cProjectTypeDataDictionary.dd
+Use cProjectStatusDataDictionary.dd
+Use cCustomerDataDictionary.dd
+Use cProjectDataDictionary.dd
+Use cResourceDataDictionary.dd
+Use cProjectAllocationDataDictionary.dd
+Use cWebButton.pkg
+Use cGraphControl.pkg
+
+Use ProjectDetailsConfigWizard.pkg
+
+Composite cWidgetProjectDetails is a cWebWidget
+    Object oResource_DD is a cResourceDataDictionary
+    End_Object
+
+    Object oCustomer_DD is a cCustomerDataDictionary
+    End_Object
+
+    Object oProjectStatus_DD is a cProjectStatusDataDictionary
+    End_Object
+
+    Object oProjectType_DD is a cProjectTypeDataDictionary
+    End_Object
+
+    Object oProject_DD is a cProjectDataDictionary
+        Set DDO_Server to oCustomer_DD
+        Set DDO_Server to oProjectStatus_DD
+        Set DDO_Server to oProjectType_DD
+    End_Object
+
+    Object oProjectAllocation_DD is a cProjectAllocationDataDictionary
+        Set DDO_Server to oResource_DD
+        Set Constrain_file to Project.File_number
+        Set DDO_Server to oProject_DD
+    End_Object
+
+    Set Main_DD to oProject_DD
+    Set Server to oProject_DD
+    
+    {WebProperty = Server}
+    Property String psDefaultProjectName
+    
+    {WebProperty = Server}
+    Property Boolean pbAllowProjectSelect
+
+    Set piDefaultColSpan to 4
+    Set piDefaultRowSpan to 5
+    
+    Set psWidgetName to "ProjectDetails"  // Make this a unique identifier
+    Set psWidgetCaption to "Project Details"
+    Set psWidgetDescription to "Shows project allocation and quick access"
+    
+    Set phoConfigWizard to oProjectDetailsConfigWizard
+
+    Set piColumnCount to 12
+
+//    Object oWebSuggestionForm1 is a cWebSuggestionForm
+//        Entry_Item Project.Name
+//        
+//        Set piColumnSpan to 0
+//        Set psPlaceHolder to "Begin typing to select a project"
+//        Set pbShowLabel to False
+//    End_Object
+
+    Object oWebCombo1 is a cWebCombo
+        Entry_Item Project.Name
+        
+        Set piColumnSpan to 0
+        Set psLabel to "Project"
+        Set pbServerOnChange to True
+
+        Procedure OnChange String sNewValue String sOldValue
+            Forward Send OnChange sNewValue sOldValue
+            
+            Send Clear of oProject_DD
+            Move sNewValue to Project.Name
+            
+            Send Find of oProject_DD EQ 3
+            
+            Send ReloadChart
+        End_Procedure
+    End_Object
+
+    Object oWebButton1 is a cWebButton
+        Set piColumnSpan to 0
+        Set psCaption to "All projects"
+        
+        WebRegisterPath ntNavigateForward oSelectProject
+        
+        Procedure OnClick
+            Send NavigatePath
+        End_Procedure
+    End_Object
+    
+    Object oWebButton2 is a cWebButton
+        Set piColumnSpan to 0
+        Set psCaption to "Project details"
+        
+        WebRegisterPath ntNavigateForward oZoomProject
+        
+        Procedure OnClick
+            Send NavigatePath
+        End_Procedure
+    End_Object
+    
+    Object oGraph is a cGraph
+        Set pbShowLabel to False
+        Set psTitle to "Allocation"
+        Set psChartBackgroundColor to "white"
+        Set psLegendAlignment to "right"
+        Set piColumnSpan to 0
+        Set pbFillHeight to True
+        Set psChartType to "pie"
+        Set psChartingLibrary to "Chartjs"
+    End_Object
+    
+    Procedure ReloadChart
+        structGraphData[] tGraphData
+        String sXAxisLabels
+        Integer iProjectId
+        
+        WebSet psTitle of oGraph to ("Allocation for: " + (Trim(Project.Name)))
+        
+        // Find allocation based on selected project ID
+        Get Field_Current_Value of oProject_DD Field Project.ProjectID to iProjectId
+        
+        Send Clear of oProjectAllocation_DD
+        Move iProjectId to ProjectAllocation.ProjectID
+        
+        Send Find of oProjectAllocation_DD GE 1
+        
+        While (Found)
+            If (ProjectAllocation.ProjectID = iProjectId) Begin    
+                // x axis contains the persons - this will define our pie slices
+                If (SizeOfString(sXAxisLabels)=0) Begin
+                    Move (Trim(Resource.FirstName)) to sXAxisLabels
+                End
+                Else Begin
+                    Append sXAxisLabels (", " + (Trim(Resource.FirstName)))
+                End
+                
+                // Hours allocation is the data
+                Move ProjectAllocation.HoursPerWeek to tGraphData[0].nData[-1]
+            End
+            Send Find of oProjectAllocation_DD GT 1
+        Loop
+        
+        WebSet psXAxisLabels of oGraph to sXAxisLabels
+        Send CreateChart of oGraph tGraphData
+    End_Procedure
+
+    Procedure OnGetConfigurableProps tWidgetConfigProp[]  ByRef aConfigurableProps
+        Forward Send OnGetConfigurableProps (&aConfigurableProps)
+        
+        Get CreateConfigurableProp (Widget(Self)) (RefFunc(psDefaultProjectName)) to aConfigurableProps[-1]
+        // This defines the label in the standard config wizard
+        Move 'Default project' to aConfigurableProps[0].Settings.sOptLabel
+        
+        Get CreateConfigurableProp (Widget(Self)) (RefFunc(pbAllowProjectSelect)) to aConfigurableProps[-1]
+        // This defines the label in the standard config wizard
+        Move 'Allow Select' to aConfigurableProps[1].Settings.sOptLabel
+    End_Procedure
+
+    Procedure OnWidgetPropsChanged
+        Send ApplyCustomProps
+    End_Procedure
+
+    Procedure OnInitializeWidget
+        Send ApplyCustomProps
+    End_Procedure   
+    
+    Procedure ApplyCustomProps
+        String sName
+        Boolean bAllow
+        
+        Forward Send OnInitializeWidget
+        
+        WebGet pbAllowProjectSelect to bAllow
+        WebSet pbRender of oWebCombo1 to bAllow
+        
+        WebGet psDefaultProjectName to sName
+        Send Clear of oProject_DD
+        Move sName to Project.Name
+        Send Find of oProject_DD EQ 3
+        
+        Send ReloadChart
+    End_Procedure
+    
+End_Composite 

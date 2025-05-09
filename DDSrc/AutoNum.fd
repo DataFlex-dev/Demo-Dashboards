@@ -1,0 +1,7 @@
+#REPLACE FILE2 AutoNum
+#REPLACE AutoNum.Recnum |FN2,0
+#REPLACE AutoNum.CustomerID |FN2,1
+#REPLACE AutoNum.ProjectID |FN2,2
+#REPLACE AutoNum.ProjectStatusID |FN2,3
+#REPLACE AutoNum.PrjTypeID |FN2,4
+#REPLACE AutoNum.ResourceID |FN2,5

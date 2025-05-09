@@ -1,0 +1,42 @@
+﻿Use DataDict.pkg
+
+Open ProgressType
+Open ProgressLog
+
+Object oAppliesToValidTypeOfWork is a ValidationTable
+    Set Allow_Blank_State to False
+    
+    Procedure Fill_List
+        Forward Send Fill_List
+        Send Add_Table_Value "TASK"
+        Send Add_Table_Value "PROJECT"
+    End_Procedure
+End_Object
+
+
+Class cProgressTypeDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to ProgressType.File_Number
+
+        Set Add_Client_File to ProgressLog.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Field_Class_Name Field ProgressType.AppliesTo to "Combo"
+        Set Field_Value_Table Field ProgressType.AppliesTo to oAppliesToValidTypeOfWork
+
+        Set Field_Class_Name Field ProgressType.Active to "Checkbox"
+
+    End_Procedure
+
+End_Class
+
+    #IFDEF Is$WebApp
+    #ELSE
+    #ENDIF
+    

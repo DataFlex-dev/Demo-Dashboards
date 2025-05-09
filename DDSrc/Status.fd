@@ -1,0 +1,5 @@
+#REPLACE FILE8 Status
+#REPLACE Status.File_Number |CI8
+#REPLACE Status.StatusID |FS8,1
+#REPLACE Status.Description |FS8,2
+#REPLACE Status.Active |FN8,3

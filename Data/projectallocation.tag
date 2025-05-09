@@ -1,0 +1,3 @@
+ProjectID
+ResourceID
+HoursPerWeek

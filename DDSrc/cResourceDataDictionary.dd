@@ -1,0 +1,49 @@
+﻿Use DataDict.pkg
+
+Open Resource
+Open ProjectAllocation
+Open AutoNum
+Register_Object oResourceWebLookup
+
+Class cResourceDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to Resource.File_Number
+
+        Set Add_System_File to AutoNum.File_Number DD_Lock_On_All
+
+        Set Add_Client_File to ProjectAllocation.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+        Set Field_Label_Short Field Resource.ResourceID to "Resource ID"
+        Set Field_Auto_Increment Field Resource.ResourceID to File_Field AutoNum.ResourceID
+        Set Key_Field_State Field Resource.ResourceID to True
+
+        Set Field_Label_Short Field Resource.FirstName to "First Name"
+        Set Field_Option Field Resource.FirstName DD_REQUIRED to True
+        Set Field_WebPrompt_Object Field Resource.FirstName to oResourceWebLookup
+
+        Set Field_Label_Short Field Resource.LastName to "Last Name"
+        Set Field_Option Field Resource.LastName DD_REQUIRED to True
+        Set Field_WebPrompt_Object Field Resource.LastName to oResourceWebLookup
+
+        Set Field_Label_Short Field Resource.Initials to "Initials"
+        Set Field_WebPrompt_Object Field Resource.Initials to oResourceWebLookup
+
+        Set Field_Label_Long Field Resource.TTPersonID to "Timetrack Person ID"
+        Set Field_Label_Short Field Resource.TTPersonID to "Timetrack ID"
+        Set Field_WebPrompt_Object Field Resource.TTPersonID to oResourceWebLookup
+
+    End_Procedure
+
+End_Class
+
+    #IFDEF Is$WebApp
+    Use ResourceWebLookup.wo
+    #ELSE
+    #ENDIF
+    

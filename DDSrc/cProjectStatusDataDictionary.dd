@@ -1,0 +1,36 @@
+﻿Use DataDict.pkg
+
+Open ProjectStatus
+Open Project
+Open AutoNum
+
+Class cProjectStatusDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to ProjectStatus.File_Number
+
+        Set Add_System_File to AutoNum.File_Number DD_Lock_On_All
+
+        Set Add_Client_File to Project.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Key_Field_State Field ProjectStatus.ProjectStatusID to True
+        Set Field_Auto_Increment Field ProjectStatus.ProjectStatusID to File_Field AutoNum.ProjectStatusID
+
+        Set Field_Label_Short Field ProjectStatus.Code to "Project Status"
+        Set Field_Option Field ProjectStatus.Code DD_REQUIRED to True
+
+        Set Field_Label_Short Field ProjectStatus.Description to "Project Status Description"
+
+        Set Field_Class_Name Field ProjectStatus.Active to "Checkbox"
+        Set Field_Label_Short Field ProjectStatus.Active to "Active"
+        Set Field_Checkbox_Values Field ProjectStatus.Active to "1" "0"
+
+    End_Procedure
+
+End_Class

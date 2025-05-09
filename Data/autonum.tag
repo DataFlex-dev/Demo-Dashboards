@@ -1,0 +1,5 @@
+CustomerID
+ProjectID
+ProjectStatusID
+PrjTypeID
+ResourceID

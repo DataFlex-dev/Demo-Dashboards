@@ -1,0 +1,40 @@
+﻿Use DataDict.pkg
+
+Open ProjectType
+Open Project
+Open AutoNum
+
+
+Class cProjectTypeDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to ProjectType.File_Number
+
+        Set Add_System_File to AutoNum.File_Number DD_Lock_On_All
+
+        Set Add_Client_File to Project.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+        Set Key_Field_State Field ProjectType.PrjTypeID to True
+        Set Field_Auto_Increment Field ProjectType.PrjTypeID to File_Field AutoNum.PrjTypeID
+
+        Set Field_Option Field ProjectType.Type DD_REQUIRED to True
+        Set Field_Label_Short Field ProjectType.Type to "Project Type"
+
+        Set Field_Class_Name Field ProjectType.Description to "Project Type Description"
+
+        Set Field_Class_Name Field ProjectType.Active to "Checkbox"
+        Set Field_Checkbox_Values Field ProjectType.Active to "1" "0"
+
+    End_Procedure
+
+End_Class
+
+    #IFDEF Is$WebApp
+    #ELSE
+    #ENDIF
+    

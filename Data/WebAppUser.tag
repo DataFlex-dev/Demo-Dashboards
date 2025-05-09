@@ -1,0 +1,6 @@
+LoginName
+Password
+Rights
+FullName
+LastLogin
+DashboardConfig

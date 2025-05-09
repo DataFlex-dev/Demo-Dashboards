@@ -1,0 +1,9 @@
+ProjectID
+Name
+PrjType
+TTCode
+TTSubcode
+Description
+PrjStatus
+JiraIssueID
+CustomerID

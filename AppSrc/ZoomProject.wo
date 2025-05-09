@@ -1,0 +1,305 @@
+﻿// C:\Projects\Training\2023 UI training\ResourceTrackerV2\AppSrc\ZoomProject.wo
+// Project
+//
+
+Use cWebView.pkg
+Use cWebPanel.pkg
+Use cWebMenuGroup.pkg
+Use cWebMenuItem.pkg
+Use cWebForm.pkg
+Use cWebGroup.pkg
+Use cWebList.pkg
+Use cWebGrid.pkg
+Use cWebColumn.pkg
+Use cWebParentCombo.pkg
+Use cWebEdit.pkg
+Use cWebSuggestionForm.pkg
+
+Use cCustomerDataDictionary.dd
+Use cProjectTypeDataDictionary.dd
+Use cProjectStatusDataDictionary.dd
+Use cProjectDataDictionary.dd
+Use cResourceDataDictionary.dd
+Use cProjectAllocationDataDictionary.dd
+Use ResourceWebLookup.wo
+Use CustomerWebLookup.wo
+
+Object oZoomProject is a cWebView
+    Set piColumnCount to 12
+    Set psCaption to "Project"
+    Set peWebViewStyle to wvsDrilldown
+    Set peViewType to vtZoom
+    Set pbShowCaption to False
+    Set Verify_Save_Msg to 0
+    Set piMaxWidth to 1024
+
+    Object oCustomer_DD is a cCustomerDataDictionary
+    End_Object 
+
+    Object oProjectType_DD is a cProjectTypeDataDictionary
+    End_Object 
+
+    Object oProjectStatus_DD is a cProjectStatusDataDictionary
+    End_Object 
+
+    Object oProject_DD is a cProjectDataDictionary
+        Set DDO_Server To oProjectType_DD
+        Set DDO_Server To oProjectStatus_DD
+        Set DDO_Server to oCustomer_DD
+        // this lets you save a new parent DD record from within child DD
+        Set Allow_Foreign_New_Save_State to True
+    End_Object 
+
+    Object oResource_DD is a cResourceDataDictionary
+    End_Object 
+
+    Object oProjectAllocation_DD is a cProjectAllocationDataDictionary
+        Set DDO_Server To oProject_DD
+        Set DDO_Server To oResource_DD
+        Set Constrain_File To Project.File_Number
+    End_Object 
+
+    Set Main_DD To oProject_DD
+    Set Server  To oProject_DD
+
+
+    Object oWebMainPanel is a cWebPanel
+        Set piColumnCount to 12
+        Set peLayoutType to ltGrid
+        Set piRowCount to 5
+        Set psRowHeights to "4/1fr"
+        WebSetResponsive piColumnCount rmMobile to 4
+
+        Object oProjectName is a cWebForm
+            Entry_Item Project.Name
+            Set piColumnSpan to 6
+            Set piColumnIndex to 0
+            Set peLabelPosition to lpTop
+            Set psLabel to "Project Name"
+            Set piRowIndex to 0
+        End_Object 
+
+        Object oProjectDescription is a cWebEdit
+            Entry_Item Project.Description
+            Set piColumnSpan to 6
+            Set piColumnIndex to 6
+            Set peLabelPosition to lpTop
+            Set psLabel to "Description"
+            Set piRowIndex to 0
+            Set piRowSpan to 2
+            Set pbFillHeight to True
+            Set piMinHeight to 0
+        End_Object 
+
+        Object oCustomerCompany is a cWebSuggestionForm
+            Entry_Item Customer.Company
+            Set piColumnSpan to 6
+            Set piColumnIndex to 0
+            Set peLabelPosition to lpTop
+            Set psLabel to "Company"
+            Set pbPromptButton to True
+            Set pbFullText to True
+            
+            Procedure OnPrompt
+                Send Popup of oCustomerWebLookup Self
+            End_Procedure
+        End_Object 
+
+        Object oProjectTypeType is a cWebParentCombo
+            Entry_Item ProjectType.Type
+            Set piColumnSpan to 4
+            Set piColumnIndex to 0
+            Set peLabelPosition to lpTop
+            Set psLabel to "Type"
+            Set piRowIndex to 2
+        End_Object 
+
+        Object oProjectStatusDescription is a cWebParentCombo
+            Entry_Item ProjectStatus.Code
+            Set piColumnSpan to 4
+            Set piColumnIndex to 4
+            Set peLabelPosition to lpTop
+            Set psLabel to "Status"
+            Set piRowIndex to 2
+        End_Object 
+
+        Object oWebGroup1 is a cWebGroup
+            Set piColumnSpan to 12
+            Set piColumnIndex to 0
+            Set piColumnCount to 12
+            Set psCaption to "External"
+            Set piRowIndex to 3
+
+            Object oProjectTTCode is a cWebForm
+                Entry_Item Project.TTCode
+                Set piColumnSpan to 3
+                Set piColumnIndex to 0
+                Set peLabelPosition to lpTop
+                Set psLabel to "TTCode"
+            End_Object 
+
+            Object oProjectTTSubcode is a cWebForm
+                Entry_Item Project.TTSubcode
+                Set piColumnSpan to 6
+                Set piColumnIndex to 3
+                Set peLabelPosition to lpTop
+                Set psLabel to "TTSubcode"
+            End_Object 
+            WebSetResponsive piColumnCount rmMobile to 4
+
+            Object oProjectJiraIssueID is a cWebForm
+                Entry_Item Project.JiraIssueID
+                Set piColumnSpan to 3
+                Set piColumnIndex to 9
+                Set peLabelPosition to lpTop
+                Set psLabel to "JiraIssueID"
+            End_Object 
+        End_Object 
+
+        Object oDetailGrid is a cWebGrid
+            Set Server to oProjectAllocation_DD
+            Set piOrdering to 1
+            Set pbFillHeight to True
+            Set piColumnSpan to 12
+            Set piMinHeight to 200
+            Set piRowIndex to 4
+            Set piColumnIndex to 0
+
+            Object oResourceFirstName is a cWebColumn
+                Entry_Item Resource.FirstName
+                Set psCaption to "First Name"
+                Set piWidth to 531
+                Set pbPromptButton to True
+
+                Procedure OnPrompt
+                    Send Popup of oResourceWebLookup Self
+                End_Procedure
+                
+                
+            End_Object 
+
+            Object oResourceLastName is a cWebColumn
+                Entry_Item Resource.LastName
+                Set psCaption to "Last Name"
+                Set piWidth to 1063
+            End_Object 
+
+            Object oProjectAllocationHoursPerWeek is a cWebColumn
+                Entry_Item ProjectAllocation.HoursPerWeek
+                Set psCaption to "HoursPerWeek"
+                Set piWidth to 189
+            End_Object 
+
+        End_Object 
+    End_Object 
+
+    Object oActionGroup is a cWebMenuGroup
+
+        Object oSaveBtn is a cWebMenuItem
+            Set psCSSClass to "WebSaveMenuItem"
+            Set psCaption to "Save"
+
+            Procedure OnClick
+                Send Request_Save
+            End_Procedure
+
+        End_Object 
+
+        Object oEditBtn is a cWebMenuItem
+            Set psCSSClass to "WebEditMenuItem"
+            Set psCaption to "Edit"
+            Procedure OnClick
+                Send ChangeEditMode True
+                Send SetActionButtons
+                Send SetDynamicEnabled of oResourceFirstName 
+                Send SetDynamicEnabled of oResourceLastName
+                Send SetDynamicEnabled of oProjectAllocationHoursPerWeek
+            End_Procedure
+
+        End_Object 
+
+        Object oDeleteBtn is a cWebMenuItem
+            Set psCSSClass to "WebDeleteMenuItem"
+            Set psCaption to "Delete"
+            Set peActionDisplay to adMenu
+
+            Procedure OnClick
+                Send Request_Delete
+            End_Procedure
+
+        End_Object 
+
+        Object oCancelChangesBtn is a cWebMenuItem
+            Set psCSSClass to "WebIcon_Refresh"
+            Set psCaption to "Clear Changes"
+            Set peActionDisplay to adMenu
+            Procedure OnClick
+                Send RefreshRecord
+            End_Procedure
+
+        End_Object 
+    End_Object 
+
+    Procedure SetActionButtons
+        tWebNavigateData NavigateData
+        Boolean bHasRecord
+        Handle hoDD
+
+        Get Server to hoDD
+        Get GetNavigateData to NavigateData
+        Get HasRecord of hoDD to bHasRecord
+
+        // let's hide all buttons and then Show the ones we want
+        WebSet pbRender of oEditBtn to False
+        WebSet pbRender of oSaveBtn to False
+        WebSet pbRender of oCancelChangesBtn to False
+        WebSet pbRender of oDeleteBtn to False
+
+        If (NavigateData.bReadOnly) Begin
+            WebSet pbRender of oEditBtn to True
+        End
+        Else Begin
+            WebSet pbRender of oSaveBtn to True
+            WebSet pbRender of oCancelChangesBtn to True
+            WebSet pbRender of oDeleteBtn to bHasRecord
+        End
+    End_Procedure
+
+    Procedure OnViewSaved Handle hoServer Boolean bChanged
+        // Close after save
+        Send NavigateClose Self
+    End_Procedure
+
+    // this will close the view after a delete
+    Procedure OnViewDeleted Handle hoDDO
+        Send NavigateClose Self
+    End_Procedure
+
+    Procedure OnNavigateForward tWebNavigateData NavigateData Integer hoInvokingView Integer hoInvokingObject
+        If (HasRecord(oProject_DD)) ;
+            Send SetBreadcrumbCaption Project.Name
+        Else ;
+            Send SetBreadcrumbCaption "New"
+        
+        Case Begin
+            Case (NavigateData.eNavigateType = nfFromMain)
+                // If from main, this is a propbably a main file Select to Zoom.
+                Case Break
+
+            Case (NavigateData.eNavigateType = nfFromParent)
+                // If from parent, this is a constrained drill down.
+                Case Break
+
+            Case (NavigateData.eNavigateType = nfFromChild)
+                // If from child, this is a probably a parent Zoom from a Zoom.
+                Case Break
+
+            Case Else // must be nfUndefined
+
+        Case End
+
+        Send SetActionButtons
+
+    End_Procedure
+
+End_Object 

@@ -1,0 +1,175 @@
+﻿// C:\Projects\Training\2023 UI training\ResourceTrackerV2\AppSrc\SelectResource.wo
+// Resources
+//
+
+Use cWebView.pkg
+Use cWebList.pkg
+Use cWebMenuGroup.pkg
+Use cWebMenuItem.pkg
+Use cWebColumnButton.pkg
+Use cWebColumn.pkg
+Use SelectProject.wo
+Use ZoomResource.wo
+
+Use cResourceDataDictionary.dd
+
+Object oSelectResource is a cWebView
+    Set psCaption to "Resources"
+    Set peWebViewStyle to wvsDrilldown
+    Set peViewType to vtSelect
+    Set piColumnCount to 12
+    Set pbShowCaption to False
+
+    Object oResource_DD is a cResourceDataDictionary
+    End_Object 
+
+    Set Main_DD To oResource_DD
+    Set Server  To oResource_DD
+
+
+    Object oList is a cWebList
+        Set piColumnSpan to 0
+        Set pbServerOnRowClick to True
+        Set pbFillHeight to True
+        Set piSortColumn to 0
+
+        Object oResourceResourceID is a cWebColumn
+            Entry_Item Resource.ResourceID
+            Set psCaption to "ResourceID"
+            Set piWidth to 136
+            Set pbHidden to True
+        End_Object 
+
+        Object oResourceInitials is a cWebColumn
+            Entry_Item Resource.Initials
+            Set psCaption to "Initials"
+            Set piWidth to 79
+            Set pbFixedWidth to True
+        End_Object 
+
+        Object oResourceFirstName is a cWebColumn
+            Entry_Item Resource.FirstName
+            Set psCaption to "FirstName"
+            Set piWidth to 246
+        End_Object 
+
+        Object oResourceLastName is a cWebColumn
+            Entry_Item Resource.LastName
+            Set psCaption to "LastName"
+            Set piWidth to 499
+        End_Object 
+
+        Object oResourceTTPersonID is a cWebColumn
+            Entry_Item Resource.TTPersonID
+            Set psCaption to "TTPersonID"
+            Set piWidth to 120
+            Set pbHidden to True
+        End_Object 
+
+        Object oDetailButton is a cWebColumnButton
+            Set psCaption to "Detail"
+            Set piWidth to 46
+            Set pbFixedWidth to True
+            Set pbResizable to False
+            Set piListRowSpan to 1
+            Set psBtnCssClass to "WebButtonIcon WebIcon_Info"
+            Set peAlign to alignRight
+            Set pbShowCaption to False
+
+            Procedure OnClick
+                Send NavigatePath of oList
+            End_Procedure
+
+        End_Object 
+
+        WebRegisterPath ntNavigateForward oZoomResource
+
+        Procedure OnRowClick String sRowId
+            tWebNavigateData NavigateData
+            Get GetNavigateData to NavigateData
+
+            Case Begin
+                Case (NavigateData.eNavigateType = nfFromParent)
+                    Send NavigateForward of oZoomResource Self
+                    Case Break
+
+                Case (NavigateData.eNavigateType = nfFromChild)
+                    Send NavigateClose Self
+                    Case Break
+
+                Case (NavigateData.eNavigateType = nfFromMain)
+                    Send NavigateClose Self
+                    Case Break
+
+                Case Else // must be nfUndefined
+                    Send NavigateForward of oZoomResource Self
+
+            Case End
+        End_Procedure
+
+        Procedure OnGetNavigateForwardData tWebNavigateData ByRef NavigateData Handle hoToView
+            Move False to NavigateData.bReadOnly
+        End_Procedure
+
+    End_Object 
+
+    Object oActionGroup is a cWebMenuGroup
+
+        Object oSearch is a cWebMenuItem
+            Set psCSSClass to "WebPromptMenuItem"
+            Set psCaption to "Search"
+
+            Procedure OnClick
+                Send Search of oList
+            End_Procedure
+
+        End_Object 
+
+        Object oNewButton is a cWebMenuItem
+            Set psCSSClass to "WebClearMenuItem"
+            Set psCaption to "New"
+
+            WebRegisterPath ntNavigateForward oZoomResource
+
+            Procedure OnClick
+                Send NavigatePath
+            End_Procedure
+
+            Procedure OnGetNavigateForwardData tWebNavigateData ByRef NavigateData Handle hoToView
+                Move True to NavigateData.bNewRecord
+            End_Procedure
+
+        End_Object 
+    End_Object 
+
+    Procedure OnNavigateForward tWebNavigateData NavigateData Integer hoInvokingView Integer hoInvokingObject
+        WebSet pbRender of oNewButton to True
+        WebSet pbRender of oDetailButton to True
+
+        Case Begin
+            Case (NavigateData.eNavigateType = nfFromParent)
+                // If from parent, this is a constrained drill down
+                Case Break
+
+            Case (NavigateData.eNavigateType = nfFromChild)
+                // If from child, this is a probably a parent lookup from a Zoom
+                Case Break
+
+            Case (NavigateData.eNavigateType = nfFromMain)
+                // If from main, this is a probably a main-file lookup from a Zoom
+                WebSet pbRender of oDetailButton to False
+                Case Break
+
+            Case Else // must be nfUndefined
+                // This may be the start of a drilldown query or this may be used for some kind of custom query.
+
+        Case End
+
+    End_Procedure
+
+    Procedure OnBeforeShow
+        Delegate Send HighlightMenu Self
+    End_Procedure
+
+
+End_Object 

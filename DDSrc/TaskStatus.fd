@@ -1,0 +1,6 @@
+#REPLACE FILE10 TaskStatus
+#REPLACE TaskStatus.File_Number |CI10
+#REPLACE TaskStatus.TaskStatusID |FN10,1
+#REPLACE TaskStatus.Code |FS10,2
+#REPLACE TaskStatus.Description |FS10,3
+#REPLACE TaskStatus.Active |FN10,4

@@ -1,0 +1,7 @@
+#REPLACE FILE7 Resource
+#REPLACE Resource.Recnum |FN7,0
+#REPLACE Resource.ResourceID |FN7,1
+#REPLACE Resource.FirstName |FS7,2
+#REPLACE Resource.LastName |FS7,3
+#REPLACE Resource.Initials |FS7,4
+#REPLACE Resource.TTPersonID |FN7,5

@@ -1,0 +1,113 @@
+﻿Use cWebWidget.pkg
+Use cWebWidgetConfigurationWizard.pkg
+
+Object oProjectDetailsConfigWizard is a cWebWidgetConfigurationWizard
+    Object oCustomer_DD is a cCustomerDataDictionary
+    End_Object
+    
+    Object oProjectStatus_DD is a cProjectStatusDataDictionary
+    End_Object
+
+    Object oProjectType_DD is a cProjectTypeDataDictionary
+    End_Object
+
+    Object oProject_DD is a cProjectDataDictionary
+        Set DDO_Server to oCustomer_DD
+        Set DDO_Server to oProjectStatus_DD
+        Set DDO_Server to oProjectType_DD
+    End_Object
+    
+    Set Main_DD to oProject_DD
+    Set Server to oProject_DD
+    Set pbServerOnShow to True
+    
+    Object oMainPanel is a cWebPanel
+        Set peRegion to prCenter
+        
+        Object oWcbAllowProjectSelect is a cWebCheckbox
+            Set psCSSClass to "FlipSwitch"
+            Set psCaption to "Allow project select"
+        End_Object
+        
+        Object oWlProjects is a cWebList
+            Object oWcProjectName is a cWebColumn
+                Entry_Item Project.Name
+            End_Object
+        End_Object
+    End_Object
+    
+    Object oButtonPanel is a cWebPanel
+        Set peRegion to prBottom
+        Set piColumnCount to 4
+        
+        Object oOkBtn is a cWebButton
+            Set pbShowLabel to False
+            Set psCaption to "Ok"
+            Set piColumnIndex to 1
+            
+            Procedure OnClick
+                Send Ok
+            End_Procedure
+        End_Object
+        
+        Object oCancelBtn is a cWebButton
+            Set pbShowLabel to False
+            Set psCaption to "Cancel"
+            Set piColumnIndex to 2
+            
+            Procedure OnClick
+                Send Cancel
+            End_Procedure
+        End_Object
+    End_Object
+    
+    Procedure OnPopulateWizard tWidgetConfigProp[] aConfigurableProps tWidgetConfigPropValue[] aCurPropValues
+        String sVal
+        
+        Forward Send OnPopulateWizard aConfigurableProps aCurPropValues
+        
+        // Get widget's current values and park them for later use
+        Get GetPropValue (&aCurPropValues) '' 'psDefaultProjectName' to sVal
+        Send ParkPropValue '' 'psDefaultProjectName' sVal
+                   
+        Get GetPropValue (&aCurPropValues) '' 'pbAllowProjectSelect' to sVal
+        Send ParkPropValue '' 'pbAllowProjectSelect' sVal  
+    End_Procedure
+
+    Procedure OnGetConfigValues tWidgetConfigPropValue[]  ByRef aNewPropValues
+        String sVal
+        Forward Send OnGetConfigValues (&aNewPropValues)
+        
+        // Extract new values from the wizard so they can be passed back to the widget
+        
+        WebGet psValue of oWcbAllowProjectSelect to sVal
+        Send SetPropValue (&aNewPropValues) '' 'pbAllowProjectSelect' sVal
+                
+        Get Field_Current_Value of oProject_DD Field Project.Name to sVal
+        Send SetPropValue (&aNewPropValues) '' 'psDefaultProjectName' sVal
+    End_Procedure
+
+    Procedure OnShow
+        String sVal
+        Forward Send OnShow
+        
+        // Use parked widget prop values to set the checkbox and populate the list
+        
+        Get RetrieveParkedPropValue '' 'psDefaultProjectName' to sVal
+        
+        If (sVal <> "") Begin
+            Send Clear of oProject_DD
+            Move sVal to Project.Name
+            Send Find of oProject_DD EQ 3
+        End
+        Else Begin
+            Send FindFromTop to oWlProjects
+        End
+         
+        Send GridRefresh of oWlProjects
+        
+        Get RetrieveParkedPropValue '' 'pbAllowProjectSelect' to sVal
+        WebSet psValue of oWcbAllowProjectSelect to sVal
+    End_Procedure
+    
+End_Object

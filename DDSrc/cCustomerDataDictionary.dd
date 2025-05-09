@@ -1,0 +1,39 @@
+﻿Use DataDict.pkg
+
+Open Customer
+Open Project
+Open AutoNum
+
+Register_Object oCustomerWebLookup
+
+Class cCustomerDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to Customer.File_Number
+
+        Set Add_System_File to AutoNum.File_Number DD_Lock_On_All
+
+        Set Add_Client_File to Project.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Key_Field_State Field Customer.CustomerID to True
+        Set Field_Option Field Customer.CustomerID DD_DISPLAYONLY to True
+        Set Field_WebPrompt_Object Field Customer.CustomerID to oCustomerWebLookup
+        Set Field_Auto_Increment Field Customer.CustomerID to File_Field AutoNum.CustomerID
+
+        Set Field_WebPrompt_Object Field Customer.Company to oCustomerWebLookup
+
+    End_Procedure
+
+End_Class
+
+    #IFDEF Is$WebApp
+    Use CustomerWebLookup.wo
+    #ELSE
+    #ENDIF
+    

@@ -1,0 +1,59 @@
+﻿Use DataDict.pkg
+
+Open Project
+Open ProjectAllocation
+Open ProjectType
+Open Customer
+Open ProjectStatus
+Open AutoNum
+
+    
+Object vtProjects is a FileValidationTable 
+    Set Table_Title to "Projects"
+    Set Main_File to Project.File_Number
+    Set Code_Field to 2
+    Set Description_Field to 2
+End_Object
+    
+
+Class cProjectDataDictionary is a DataDictionary
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to Project.File_Number
+
+        Set Add_System_File to AutoNum.File_Number DD_Lock_On_All
+
+        Set Add_Server_File to ProjectType.File_Number
+        Set Add_Server_File to ProjectStatus.File_Number
+        Set Add_Server_File to Customer.File_Number
+
+        Set Add_Client_File to ProjectAllocation.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+        Set Key_Field_State Field Project.ProjectID to True
+        Set Field_Label_Short Field Project.ProjectID to "Project ID"
+        Set Field_Auto_Increment Field Project.ProjectID to File_Field AutoNum.ProjectID
+
+        Set Field_Option Field Project.Name DD_REQUIRED to True
+        Set Field_Label_Short Field Project.Name to "Name"
+        Set Field_Label_Long Field Project.Name to "Project Name"
+        Set Field_Value_Table Field Project.Name to vtProjects
+
+        Set Field_Label_Short Field Project.TTCode to "TimeTrack Code"
+
+        Set Field_Label_Short Field Project.TTSubcode to "TimeTrack SubCode"
+
+        Set Field_Label_Short Field Project.Description to "Description"
+
+    End_Procedure
+
+End_Class
+
+    #IFDEF Is$WebApp
+    #ELSE
+    #ENDIF
+    

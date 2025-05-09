@@ -1,0 +1,28 @@
+﻿Use DataDict.pkg
+
+Open ProjectAllocation
+Open Project
+Open Resource
+
+Class cProjectAllocationDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to ProjectAllocation.File_Number
+
+        Set Add_Server_File to Project.File_Number
+        Set Add_Server_File to Resource.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+    End_Procedure
+
+    Procedure Field_Defaults
+        Forward Send Field_Defaults
+        Set Field_Changed_Value Field ProjectAllocation.HoursPerWeek to 1
+    End_Procedure
+
+End_Class

@@ -1,0 +1,87 @@
+
+body,
+.MainMenuPanel.WebFlPnl .WebContainer,
+.MainMenuPanel .WebMenuList.WebControl>.WebCon_Inner{
+    background-color: #016CBC;
+}
+.MainMenuPanel.WebFlPnl .WebContainer,
+.MainMenuPanel .WebMenuList.WebControl>.WebCon_Inner,
+.MainMenuPanel .WebMenuList li.WebItm_HasSub:before{
+
+
+    color: #FFFFFF;
+}
+
+.ToggleMenuBtn.WebButton button,
+.ToggleMenuBtn.WebButton button:focus,
+.ToggleMenuBtn.WebButton button:hover {
+    background-color: #016CBC;
+    border: none;
+    box-shadow:  none;
+    color: #FFFFFF;
+}
+
+.ToggleMenuBtn.WebButton button:focus,
+.ToggleMenuBtn.WebButton button:hover {
+    background-color: #3489CA;
+}
+
+.ToggleMenuBtn.WebButton button:before{
+    margin-left: 4px;
+}
+
+.WebMenuList .Highlight div span.WebItm_Icon{
+    color: red;
+}
+.WebMenuList .Highlight{
+    font-weight: bold;
+    background-color: #3489CA;
+}
+.WebMenuList li:hover, .WebMenuList li:focus, .WebMenuList li:active {
+    background: #3489CA;
+}
+
+.WebIcon_Resources:before,
+.WebIcon_Resources button:before,
+button.WebIcon_Resources:before,
+.WebIcon_Resources>div>span.WebItm_Icon:before {
+    background-image: url('../Images/recources.svg');
+}
+
+.WebIcon_Projects:before,
+.WebIcon_Projects button:before,
+button.WebIcon_Projects:before,
+.WebIcon_Projects>div>span.WebItm_Icon:before {
+    background-image: url('../Images/projects.svg');
+}
+
+.WebIcon_Maintenance button:before,
+button.WebIcon_Maintenance:before,
+.WebIcon_Maintenance>div>span.WebItm_Icon:before {
+    background-image: url('../Images/maintenance.svg');
+}
+
+.WebIcon_Customers:before,
+.WebIcon_Customers button:before,
+button.WebIcon_Customers:before,
+.WebIcon_Customers>div>span.WebItm_Icon:before {
+    background-image: url('../Images/customers.svg');
+}
+
+.WebIcon_Planner:before,
+.WebIcon_Planner button:before,
+button.WebIcon_Planner:before,
+.WebIcon_Planner>div>span.WebItm_Icon:before {
+    background-image: url('../Images/planner.svg');
+}
+
+.WebIcon_SVG button:before,
+button.WebIcon_SVG:before,
+.WebIcon_SVG>div>span.WebItm_Icon:before {
+    content: " ";
+    background-size: 23px 23px;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 23px;
+    height: 23px;
+}

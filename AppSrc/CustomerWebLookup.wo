@@ -1,0 +1,92 @@
+﻿// C:\Projects\Training\2023 UI training\ResourceTrackerV2\AppSrc\CustomerWebLookup.wo
+// Customer Lookup List
+//
+
+Use cWebModalDialog.pkg
+Use cWebPanel.pkg
+Use cWebButton.pkg
+Use cWebPromptList.pkg
+Use cWebColumn.pkg
+
+Use cCustomerDataDictionary.dd
+
+Object oCustomerWebLookup is a cWebModalDialog
+    Set piColumnCount to 12
+    Set psCaption to "Customer Lookup List"
+    Set piWidth to 700
+    Set piHeight to 400
+
+    Object oCustomer_DD is a cCustomerDataDictionary
+    End_Object 
+
+    Set Main_DD To oCustomer_DD
+    Set Server  To oCustomer_DD
+
+
+    Object oWebMainPanel is a cWebPanel
+        Set piColumnCount to 12
+
+        Object oPromptList is a cWebPromptList
+            Set pbFillHeight to True
+            Set piColumnSpan to 12
+            Set piSortColumn to 1
+
+            Object oCustomerCustomerID is a cWebColumn
+                Entry_Item Customer.CustomerID
+                Set psCaption to "CustomerID"
+                Set piWidth to 159
+                Set pbHidden to True
+            End_Object 
+
+            Object oCustomerCompany is a cWebColumn
+                Entry_Item Customer.Company
+                Set psCaption to "Company"
+                Set piWidth to 597
+            End_Object 
+        End_Object 
+
+        Object oOkButton is a cWebButton
+            Set psCaption to "OK"
+            Set piColumnSpan to 2
+            Set piColumnIndex to 6
+
+            Procedure OnClick
+                Send Ok of oPromptList
+            End_Procedure
+
+        End_Object 
+
+        Object oCancelButton is a cWebButton
+            Set psCaption to "Cancel"
+            Set piColumnSpan to 2
+            Set piColumnIndex to 8
+            Procedure OnClick
+                Send Cancel of oPromptList
+            End_Procedure
+
+        End_Object 
+
+        Object oSearchButton is a cWebButton
+            Set psCaption to "Search..."
+            Set piColumnSpan to 2
+            Set piColumnIndex to 10
+
+            Procedure OnClick
+                Send Search of oPromptList
+            End_Procedure
+
+        End_Object 
+    End_Object 
+
+    Procedure Popup Handle hoReturnObject
+        Forward Send Popup hoReturnObject
+        
+        Send InitializePromptList of oPromptList
+    End_Procedure 
+
+    Set pbServerOnSubmit to True
+    Procedure OnSubmit 
+        Send Ok of oPromptList
+    End_Procedure 
+
+End_Object 
